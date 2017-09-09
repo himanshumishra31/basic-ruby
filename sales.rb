@@ -1,38 +1,56 @@
-# Sales class calculates total bill
-class Sales
-  @total = 0
-  @bill = Hash.new([])
-  attr_accessor :total, :bill
-  def self.calculate(product, imported, tax, price)
-    @bill[product] += [price]
-    import_tax = 0.05 * price.to_i if imported.eql? 'yes'
-    @bill[product] += [import_tax]
-    sales_tax = 0.10 * price.to_i if tax.eql? 'no'
-    @bill[product] += [sales_tax]
-    price_after_tax = price.to_i + sales_tax + import_tax
-    @total += price_after_tax.to_i
-    @bill[product] += [price_after_tax]
+module Tax
+  def sales(sales_tax)
+    if sales_tax.eql? 'no'
+      self.class.list[name] += [price*0.1]
+      self.class.total += price*0.1
+    else
+      self.class.list[name] += [0]
+    end
   end
 
+  def import(imported)
+    if imported.eql? 'yes'
+      self.class.list[name] += [price*0.05]
+      self.class.total += price*0.05
+    else
+      self.class.list[name] += [0]
+    end
+  end
+end
+
+class Product
+  @list = Hash.new([])
+  @total = 0
+  include Tax
+  attr_reader :name, :price
+
   class << self
-    attr_reader :total, :bill
+    attr_accessor :list, :total
+  end
+
+  def initialize(name, price)
+    @name = name
+    @price = price.to_i
+    self.class.list[name] += [price.to_i]
+    self.class.total += price.to_i
   end
 end
 
 more_input = 'y'
 while more_input.eql? 'y'
   print 'Name of the product: '
-  product = STDIN.gets.chomp
+  name = gets.chomp
   print 'Imported?: '
-  imported = STDIN.gets.chomp
-  print 'Exempted from sales tax? '
-  tax = STDIN.gets.chomp
+  imported = gets.chomp
+  print 'Exempted from sales tax: '
+  sales_tax = gets.chomp
   print 'Price: '
-  price = STDIN.gets.chomp
-  Sales.calculate(product, imported, tax, price)
-  print 'Do you want to add more items to your list(y/n): '
-  more_input = STDIN.gets.chomp
-  puts ''
+  price = gets.chomp
+  product = Product.new(name, price)
+  product.sales(sales_tax)
+  product.import(imported)
+  puts 'Do you want to add more items to your list(y/n): '
+  more_input = gets.chomp
 end
-puts "Total Bill Amount #{Sales.total.round}"
-puts Sales.bill
+puts Product.total
+
