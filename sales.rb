@@ -30,9 +30,9 @@ class Product
 
   def initialize(name, price)
     @name = name
-    @price = price.to_i
-    self.class.list[name] += [price.to_i]
-    self.class.total += price.to_i
+    @price = price.to_f
+    self.class.list[name] += [price.to_f]
+    self.class.total += price.to_f
   end
 end
 
@@ -52,5 +52,7 @@ while more_input.eql? 'y'
   puts 'Do you want to add more items to your list(y/n): '
   more_input = gets.chomp
 end
-puts Product.total
-
+puts 'name'.ljust(15) + 'price'.ljust(15) + 'sales_tax'.ljust(15) + 'import_tax'.ljust(15) + 'price with tax'.ljust(15)
+Product.list.each { |name, values| puts name.ljust(15) + values[0].to_s.ljust(15) + values[1].to_s.ljust(15) + values[2].to_s.ljust(15) + values.sum.to_s.ljust(15) }
+puts ""
+puts 'Total Amount'.ljust(60) + Product.total.to_s
