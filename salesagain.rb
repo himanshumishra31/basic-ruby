@@ -44,21 +44,16 @@ end
 
 class Invoice
 
-  @total = 0
-
   def initialize(list)
+    total = 0
     puts 'name'.ljust(15) + 'price'.ljust(15) + 'sales_tax'.ljust(15) + 'import_tax'.ljust(15) + 'price with tax'.ljust(15)
     list.each do |details|
       print details.name.ljust(15) + details.price.to_s.ljust(15) + details.sales_tax.to_s.ljust(15) + details.import_tax.to_s.ljust(15)
       price_after_tax = details.price + details.sales_tax + details.import_tax
       puts price_after_tax.to_s.ljust(15)
-      self.class.total += price_after_tax
+      total += price_after_tax
     end
-    puts 'Total Amount'.ljust(60) + self.class.total.to_s
-  end
-
-  class << self
-    attr_accessor :total
+    puts 'Total Amount'.ljust(60) + total.to_s
   end
 end
 
